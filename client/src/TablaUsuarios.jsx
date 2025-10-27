@@ -10,14 +10,14 @@ function TablaUsuarios({ usuarios }) {
           </tr>
         </thead>
         <tbody>
-            {usuarios.map((usuarios) => (
-                <tr key={usuarios.id}>
-                    <td>{usuarios.id}</td>
-                    <td>{usuarios.nombre}</td>
-                    <td>{usuarios.apellido}</td>
-                    <td>{usuarios.email}</td>
-                </tr>
-            ))}
+          {usuarios.map((usuario) => (
+            <tr key={usuario.id_usuario}>
+              <td>{usuario.id_usuario}</td>
+              <td>{usuario.nombre}</td>
+              <td>{usuario.apellido}</td>
+              <td>{usuario.email}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     );
