@@ -7,7 +7,7 @@ from datetime import date, datetime
 
 class Usuario(BaseModel):
     nombre: str
-    apellido: set
+    apellido: str
     email: str
     password: str
     telefono: str
@@ -19,9 +19,9 @@ class Usuario(BaseModel):
 
 
 class UsuarioId(BaseModel):
-    id: int
+    id_usuario: int
     nombre: str
-    apellido: set
+    apellido: str
     email: str
     password: str
     telefono: str

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from fastapi import HTTPException
 from config.database import db
@@ -78,7 +79,12 @@ async def create_usuario(usuario: Usuario) -> UsuarioId:
 
     #Insertar un usuario y recordar el ultimo id
     last_record_id = await db.execute(query=query, values=values)
-    return {**usuario.dict(), "id": last_record_id, "password": hashed_password}
+    {
+        **usuario.dict(), 
+        "id_usuario": last_record_id,  
+        "password": hashed_password,
+        "fecha_registro": datetime.now()  
+    }
 
 
 #Actualizar los datos del usuario
@@ -126,12 +132,16 @@ async def update_usuario(usuario_id: int, usuario: Usuario) -> UsuarioId:
         "fecha_nacimiento": usuario.fecha_nacimiento,
         "direccion": usuario.direccion,
         "activo": usuario.activo,
-        "id": usuario_id
+        "id_usuario": usuario_id
     }
 
     await db.execute(query=query, values=values)
-    return {**usuario.dict(), "id": usuario_id, "password": hashed_password}
-
+    {
+        **usuario.dict(), 
+        "id_usuario": usuario_id,  
+        "password": hashed_password,
+        "fecha_registro": existeId['fecha_registro'] 
+    }
 
 # Desactivar usuario (eliminar)
 async def delete_usuario(id: int) -> dict:
@@ -140,7 +150,7 @@ async def delete_usuario(id: int) -> dict:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
     query = "UPDATE usuarios SET activo = 0 WHERE id_usuario = id"
-    await db.execute(query=query, values={"id", id})
+    await db.execute(query=query, values={"id_usuario", id})
     return {"message": "Usuario desactivado correctamente"}
 
 
@@ -151,7 +161,7 @@ async def activate_usuario(id: int) -> dict:
         raise HTTPException(status_code=400, detail="Usuario no encontrado")
     
     query = "UPDATE usuarios SET activo = 1 WHERE id_usuario = :id"
-    await db.execute(query=query, values={"id", id})
+    await db.execute(query=query, values={"id_usuario", id})
     return {"message": "Usuario activado correctamente"}
     
 
