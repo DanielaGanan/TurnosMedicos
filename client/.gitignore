@@ -1,3 +1,6 @@
+# Base de Datos
+config/database.py
+
 # Logs
 logs
 *.log
