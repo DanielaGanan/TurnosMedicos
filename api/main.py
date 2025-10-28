@@ -1,12 +1,9 @@
 from fastapi import FastAPI
 from config.database import db
-<<<<<<< HEAD
 from routers import usuario
 from fastapi.middleware.cors import CORSMiddleware
-
-=======
 from routers.especialidades_medicos import router as em_router
->>>>>>> 4d11df530a243ea65c594229979c56b4fa14c7bb
+
 app = FastAPI(title="Sistema de Turnos Médicos - API")
 
 origins = [
