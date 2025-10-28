@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from config.database import db
-
+from routers.especialidades_medicos import router as em_router
 app = FastAPI(title="Sistema de Turnos Médicos - API")
 
 @app.on_event("startup")
@@ -10,6 +10,9 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
+
+# 👇 habilita los endpoints /api/especialidades y /api/medicos)
+app.include_router(em_router)
 
 @app.get("/")
 async def root():
