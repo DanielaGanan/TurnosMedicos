@@ -16,3 +16,4 @@ async def root():
     query = "SELECT COUNT(*) AS cantidad_turnos FROM turnos"
     result = await db.fetch_one(query)
     return {"mensaje": "Conexión exitosa ✅", "datos": result}
+
