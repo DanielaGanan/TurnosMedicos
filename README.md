@@ -55,31 +55,25 @@ TurnosMedicos/
     ├── public/            # Archivos estáticos
     └── package.json       # Dependencias npm
 
-🔧 Comandos Útiles
-Git
-bashgit pull                 # Descargar cambios
-git add .                # Preparar cambios
-git commit -m "mensaje"  # Guardar cambios
-git push                 # Subir cambios
-Backend
-bashpip install paquete      # Instalar nueva librería
-pip freeze > requirements.txt  # Actualizar dependencias
-Frontend
-bashnpm install paquete      # Instalar nueva librería
 
 📝 Notas Importantes
 
 NO subir a Git: .venv/, node_modules/, __pycache__/, .env
+
 Siempre activar el entorno virtual antes de trabajar en el backend
+
 Ejecutar git pull antes de empezar a trabajar
 
 
 🌐 URLs Importantes
 
 Frontend: http://localhost:5173
+
 Backend API: http://localhost:8000
+
 
 👥 Equipo
 
 Gañan, Daniela
+
 Gonzalez, Joaquin
