@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from config.database import db
-
+from routers.especialidades_medicos import router as em_router
 app = FastAPI(title="Sistema de Turnos Médicos - API")
 
 @app.on_event("startup")
@@ -11,8 +11,12 @@ async def startup():
 async def shutdown():
     await db.disconnect()
 
+# 👇 habilita los endpoints /api/especialidades y /api/medicos)
+app.include_router(em_router)
+
 @app.get("/")
 async def root():
     query = "SELECT COUNT(*) AS cantidad_turnos FROM turnos"
     result = await db.fetch_one(query)
     return {"mensaje": "Conexión exitosa ✅", "datos": result}
+
