@@ -1,29 +1,46 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 from typing import List
-from config.database import db
-from models import especialidades
 from schemas import EspecialidadCreate, EspecialidadOut
+from services import especialidades
 
 router = APIRouter(prefix="/especialidades", tags=["Especialidades"])
 
+
+# -------------------------
+# LISTAR TODAS
+# -------------------------
 @router.get("/", response_model=List[EspecialidadOut])
-async def listar_especialidades():
-    query = especialidades.select().where(especialidades.c.activo == True)
-    rows = await db.fetch_all(query)
-    return [dict(row) for row in rows]
+async def listar():
+    return await especialidades.listar_especialidades()
 
+
+# -------------------------
+# OBTENER UNA POR ID
+# -------------------------
+@router.get("/{id_especialidad}", response_model=EspecialidadOut)
+async def obtener(id_especialidad: int):
+    return await especialidades.obtener_especialidad(id_especialidad)
+
+
+# -------------------------
+# CREAR NUEVA
+# -------------------------
 @router.post("/", response_model=EspecialidadOut, status_code=status.HTTP_201_CREATED)
-async def crear_especialidad(payload: EspecialidadCreate):
-    q_check = especialidades.select().where(especialidades.c.nombre == payload.nombre)
-    existe = await db.fetch_one(q_check)
-    if existe:
-        raise HTTPException(status_code=400, detail="Ya existe una especialidad con ese nombre")
+async def crear(payload: EspecialidadCreate):
+    return await especialidades.crear_especialidad(payload)
 
-    q = especialidades.insert().values(
-        nombre=payload.nombre,
-        descripcion=payload.descripcion,
-        activo=payload.activo
-    )
-    new_id = await db.execute(q)
-    row = await db.fetch_one(especialidades.select().where(especialidades.c.id_especialidad == new_id))
-    return dict(row)
+
+# -------------------------
+# ACTUALIZAR
+# -------------------------
+@router.put("/{id_especialidad}", response_model=EspecialidadOut)
+async def actualizar(id_especialidad: int, payload: EspecialidadCreate):
+    return await especialidades.actualizar_especialidad(id_especialidad, payload)
+
+
+# -------------------------
+# ELIMINAR (SOFT DELETE)
+# -------------------------
+@router.delete("/{id_especialidad}")
+async def eliminar(id_especialidad: int):
+    return await especialidades.eliminar_especialidad(id_especialidad)
