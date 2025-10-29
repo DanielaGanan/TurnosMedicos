@@ -76,4 +76,4 @@ Backend API: http://localhost:8000
 
 Gañan, Daniela
 
-Gonzalez, Joaquin
+Gonzalez, Joaquin Nahuel
