@@ -2,15 +2,21 @@ from datetime import datetime
 from typing import List
 from fastapi import HTTPException
 from config.database import db
-from schemas.usuario import Usuario, UsuarioId
+from schemas.usuario import Usuario, UsuarioId, UsuarioCreate
 # Para trabajar con contraseñas encriptadas
 import hashlib
+from passlib.context import CryptContext
 
+# Para encriptar contraseñas con bcrypt
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Para hashear contra
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Encripta la contraseña"""
+    return pwd_context.hash(password)
 
+def verificar_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 # Para obtener todos los usuarios
 async def get_all_usuarios() -> List[Usuario]:
@@ -43,7 +49,7 @@ async def get_usuarios_by_dni(dni: str) -> UsuarioId:
 
 
 # Registrar un nuevo usuario
-async def create_usuario(usuario: Usuario) -> UsuarioId:
+async def create_usuario(usuario: UsuarioCreate):
 
     #Verificamos mail y dni
     existeEmail = await get_usuarios_by_email(usuario.email)
@@ -55,11 +61,12 @@ async def create_usuario(usuario: Usuario) -> UsuarioId:
         raise HTTPException(status_code=400, detail="El dni ya existe")
     
 
+    # Encriptar contraseña
     hashed_password = hash_password(usuario.password)
 
     query = """
             INSERT INTO usuarios (nombre, apellido, email, password, telefono, 
-            dni, fecha_nacimiento, direccion, activo)" \
+            dni, fecha_nacimiento, direccion, activo)
             VALUES (:nombre, :apellido, :email, :password, :telefono, 
             :dni, :fecha_nacimiento, :direccion, :activo)
     """
@@ -79,13 +86,38 @@ async def create_usuario(usuario: Usuario) -> UsuarioId:
 
     #Insertar un usuario y recordar el ultimo id
     last_record_id = await db.execute(query=query, values=values)
-    {
-        **usuario.dict(), 
-        "id_usuario": last_record_id,  
-        "password": hashed_password,
-        "fecha_registro": datetime.now()  
+
+    return {
+        "mensaje": "Usuario registrado exitosamente",
+        "id_usuario": last_record_id,
+        "nombre": usuario.nombre,
+        "email": usuario.email
     }
 
+# LOGIN
+async def login_usuario(email: str, password: str):
+    usuario = await get_usuarios_by_email(email)
+
+    if not usuario:
+        raise HTTPException(status_code=401, detail="Email o contraseña incorrecto")
+    
+ # Verificar contraseña
+    if not verificar_password(password, usuario['password']):
+        raise HTTPException(status_code=401, detail="Email o contraseña incorrectos")
+    
+    # Verificar si esta activo
+    if not usuario['activo']:
+        raise HTTPException(status_code=403, detail="Usuario inactivo")
+    
+    return {
+        "mensaje": "Login exitoso",
+        "id_usuario": usuario['id_usuario'],
+        "nombre": usuario['nombre'],
+        "apellido": usuario['apellido'],
+        "email": usuario['email'],
+        "dni": usuario['dni']
+    }
+    
 
 #Actualizar los datos del usuario
 async def update_usuario(usuario_id: int, usuario: Usuario) -> UsuarioId:
@@ -119,7 +151,7 @@ async def update_usuario(usuario_id: int, usuario: Usuario) -> UsuarioId:
             fecha_nacimiento = :fecha_nacimiento,
             direccion = :direccion,
             activo = :activo
-        WHERE id_usuario = :id
+        WHERE id_usuario = :id_usuario
     """
 
     values = {
@@ -144,39 +176,39 @@ async def update_usuario(usuario_id: int, usuario: Usuario) -> UsuarioId:
     }
 
 # Desactivar usuario (eliminar)
-async def delete_usuario(id: int) -> dict:
+async def delete_usuario(id: int):
     usuario = await get_usuarios_by_id(id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
-    query = "UPDATE usuarios SET activo = 0 WHERE id_usuario = id"
-    await db.execute(query=query, values={"id_usuario", id})
-    return {"message": "Usuario desactivado correctamente"}
+    query = "UPDATE usuarios SET activo = 0 WHERE id_usuario = :id_usuario"
+    await db.execute(query=query, values={"id_usuario": id})
+    return {"mensaje": "Usuario desactivado"}
 
 
 # Activar usuario
-async def activate_usuario(id: int) -> dict:
+async def activate_usuario(id: int):
     usuario = await get_usuarios_by_id(id)
     if not usuario:
-        raise HTTPException(status_code=400, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
-    query = "UPDATE usuarios SET activo = 1 WHERE id_usuario = :id"
-    await db.execute(query=query, values={"id_usuario", id})
-    return {"message": "Usuario activado correctamente"}
+    query = "UPDATE usuarios SET activo = 1 WHERE id_usuario = :id_usuario"
+    await db.execute(query=query, values={"id_usuario": id})
+    return {"mensaje": "Usuario activado"}
     
 
 # Login
-async def login_usuario(email: str, password: str) -> UsuarioId:
-    usuario = await get_usuarios_by_email(email)
-    if not usuario:
-        raise HTTPException(status_code=401, detail="Datos incorrectos")
+#async def login_usuario(email: str, password: str) -> UsuarioId:
+   # usuario = await get_usuarios_by_email(email)
+   # if not usuario:
+   #     raise HTTPException(status_code=401, detail="Datos incorrectos")
     
     #Verificaciones
-    hashed_password = hash_password(password)
-    if usuario['password'] != hashed_password:
-        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+  #  hashed_password = hash_password(password)
+  #  if usuario['password'] != hashed_password:
+  #      raise HTTPException(status_code=401, detail="Contraseña incorrecta")
     
-    if not usuario['activo']:
-        raise HTTPException(status_code=403, detail="Usuario inactivo")
+  #  if not usuario['activo']:
+  #      raise HTTPException(status_code=403, detail="Usuario inactivo")
     
-    return usuario
+  #  return usuario

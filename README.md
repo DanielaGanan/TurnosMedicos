@@ -74,6 +74,6 @@ Backend API: http://localhost:8000
 
 👥 Equipo
 
-Gañan, Daniela
+Gañan, Daniela Ailin
 
 Gonzalez, Joaquin Nahuel

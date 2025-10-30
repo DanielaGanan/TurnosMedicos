@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from typing import List
-from schemas import EspecialidadCreate, EspecialidadOut
+from schemas.especialidades import EspecialidadCreate, EspecialidadOut
 from services import especialidades
 
 router = APIRouter(prefix="/especialidades", tags=["Especialidades"])

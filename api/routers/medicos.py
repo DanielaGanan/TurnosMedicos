@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from typing import List
-from schemas import MedicoCreate, MedicoOut
+from schemas.medicos import MedicoCreate, MedicoOut
 from services import medicos
 
 router = APIRouter(prefix="/medicos", tags=["Médicos"])
