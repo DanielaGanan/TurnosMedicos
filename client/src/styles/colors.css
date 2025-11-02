@@ -1,0 +1,57 @@
+:root {
+  /* Paleta personalizada */
+  --primary-dark: #0B1B32;
+  --primary-medium: #26415E;
+  --primary-light: #83A6CE;
+  --accent-light: #E5C9D7;
+  --accent-medium: #C48CB3;
+  --primary-deep: #0D1E4C;
+
+  /* Textos */
+  --text-light: #f8f9fa;
+  --text-dark: #1a1a1a;
+
+  /* Fondo general */
+  --background-dark: var(--primary-dark);
+  --background-light: var(--primary-light);
+}
+
+/* Fondo general */
+body {
+  background-color: var(--background-dark);
+  color: var(--text-light);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar */
+.navbar-custom {
+  background-color: var(--primary-deep);
+}
+
+.navbar-custom .nav-link {
+  color: var(--text-light);
+  transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-link:hover {
+  color: var(--accent-light);
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-medium);
+  border-color: var(--primary-medium);
+}
+
+/* Tarjetas */
+.card {
+  background-color: var(--primary-medium);
+  color: var(--text-light);
+  border: none;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}

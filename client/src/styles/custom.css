@@ -1,0 +1,72 @@
+:root{
+  --bg-dark: #0B1B32;
+  --primary-mid: #26415E;
+  --accent-light: #83A6CE;
+  --accent-pale: #E5C9D7;
+  --accent-medium: #C48CB3;
+  --primary-deep: #0D1E4C;
+
+  --text-light: #F7F9FB;
+  --text-muted: #cbd5e1;
+}
+body{
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* navbar */
+.navbar-custom {
+  background: linear-gradient(90deg, var(--primary-deep), var(--primary-mid));
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.navbar-custom .navbar-brand {
+  color: var(--accent-pale) !important;
+  font-weight: 700;
+}
+.navbar-custom .nav-link {
+  color: var(--text-light) !important;
+  transition: color .18s ease;
+}
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link:focus {
+  color: var(--accent-light) !important;
+}
+
+/* botones primarios */
+.btn-primary {
+  background-color: var(--accent-light);
+  border-color: var(--accent-light);
+  color: #072433;
+  font-weight: 600;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--accent-medium);
+  border-color: var(--accent-medium);
+  color: #071628;
+}
+
+/* cards */
+.card {
+  background-color: rgba(13,30,76,0.85);
+  color: var(--text-light);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.55);
+}
+
+/* inputs */
+.form-control {
+  background-color: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-light);
+}
+.form-control:focus {
+  border-color: var(--accent-light);
+  box-shadow: 0 0 0 .15rem rgba(131,166,206,0.12);
+}
+
+a { color: var(--accent-light); }
+.text-muted { color: var(--text-muted) !important; }
