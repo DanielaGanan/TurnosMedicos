@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
-from config.database import db
-from models import medicos, especialidades
+from api.config.database import db
+from api.models import medicos, especialidades
+from sqlalchemy import select
 
 
 # -------------------------
@@ -11,6 +12,30 @@ async def listar_medicos(id_especialidad: int | None = None):
     if id_especialidad:
         query = query.where(medicos.c.id_especialidad == id_especialidad)
     return await db.fetch_all(query)
+
+
+# -------------------------
+# LISTAR MÉDICOS CON ESPECIALIDAD (DETALLE)
+# -------------------------
+async def listar_medicos_detalle(id_especialidad: int | None = None):
+    stmt = (
+        select(
+            medicos.c.id_doctor,
+            medicos.c.nombre,
+            medicos.c.apellido,
+            medicos.c.id_especialidad,
+            medicos.c.matricula,
+            medicos.c.email,
+            medicos.c.telefono,
+            medicos.c.activo,
+            especialidades.c.nombre.label("especialidad_nombre"),
+        )
+        .select_from(medicos.join(especialidades, medicos.c.id_especialidad == especialidades.c.id_especialidad))
+        .where(medicos.c.activo == True)
+    )
+    if id_especialidad:
+        stmt = stmt.where(medicos.c.id_especialidad == id_especialidad)
+    return await db.fetch_all(stmt)
 
 
 # -------------------------

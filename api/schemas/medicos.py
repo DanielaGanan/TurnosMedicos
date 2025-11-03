@@ -18,3 +18,7 @@ class MedicoOut(MedicoBase):
 
     class Config:
         orm_mode = True
+
+
+class MedicoDetailOut(MedicoOut):
+    especialidad_nombre: str

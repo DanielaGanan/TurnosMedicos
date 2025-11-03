@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Registro() {
+export default function Registro() {
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -34,7 +34,6 @@ function Registro() {
 
       if (response.ok) {
         setMensaje("Usuario registrado exitosamente");
-        // Limpiar formulario
         setFormData({
           nombre: "",
           apellido: "",
@@ -54,116 +53,117 @@ function Registro() {
   };
 
   return (
-    <div>
-      <h2>Registrarse</h2>
+    <div className="container mt-4">
+      <h2 className="fw-bold mb-3">Registrarse</h2>
 
-      {mensaje && (
-        <p>
-          {mensaje}
-        </p>
-      )}
+      {mensaje && <div className="alert alert-info py-2">{mensaje}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <div>
-            <label>Nombre:</label>
-            <input
-              type="text"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label>Apellido:</label>
-            <input
-              type="text"
-              name="apellido"
-              value={formData.apellido}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label>DNI:</label>
-            <input
-              type="text"
-              name="dni"
-              value={formData.dni}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label>Teléfono:</label>
-            <input
-              type="text"
-              name="telefono"
-              value={formData.telefono}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label>Fecha de Nacimiento:</label>
-            <input
-              type="date"
-              name="fecha_nacimiento"
-              value={formData.fecha_nacimiento}
-              onChange={handleChange}
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="row g-3">
+        <div className="col-md-6">
+          <label className="form-label">Nombre</label>
+          <input
+            type="text"
+            name="nombre"
+            className="form-control"
+            value={formData.nombre}
+            onChange={handleChange}
+            required
+          />
         </div>
 
-        <div>
-          <label>Dirección:</label>
+        <div className="col-md-6">
+          <label className="form-label">Apellido</label>
+          <input
+            type="text"
+            name="apellido"
+            className="form-control"
+            value={formData.apellido}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="col-md-6">
+          <label className="form-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            className="form-control"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="col-md-6">
+          <label className="form-label">DNI</label>
+          <input
+            type="text"
+            name="dni"
+            className="form-control"
+            value={formData.dni}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="col-md-6">
+          <label className="form-label">Teléfono</label>
+          <input
+            type="text"
+            name="telefono"
+            className="form-control"
+            value={formData.telefono}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="col-md-6">
+          <label className="form-label">Fecha de nacimiento</label>
+          <input
+            type="date"
+            name="fecha_nacimiento"
+            className="form-control"
+            value={formData.fecha_nacimiento}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="col-12">
+          <label className="form-label">Dirección</label>
           <input
             type="text"
             name="direccion"
+            className="form-control"
             value={formData.direccion}
             onChange={handleChange}
             required
           />
         </div>
 
-        <div>
-          <label>Contraseña:</label>
+        <div className="col-12">
+          <label className="form-label">Contraseña</label>
           <input
             type="password"
             name="password"
+            className="form-control"
             value={formData.password}
             onChange={handleChange}
             required
           />
         </div>
 
-        <button type="submit">
-          Registrarse
-        </button>
+        <div className="col-12">
+          <button type="submit" className="btn btn-primary">Registrarse</button>
+        </div>
       </form>
 
-      <p>
-        ¿Ya tenés cuenta? <a href="/login">Iniciá sesión aquí</a>
+      <p className="mt-3">
+        ¿Ya tenés cuenta? <a href="/login">Iniciá sesión acá</a>
       </p>
     </div>
   );
 }
 
-export default Registro;

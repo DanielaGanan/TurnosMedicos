@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
-from config.database import db
-from models import especialidades
+from api.config.database import db
+from api.models import especialidades
 
 
 # -------------------------

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 from typing import List
-from schemas.medicos import MedicoCreate, MedicoOut
-from services import medicos
+from api.schemas.medicos import MedicoCreate, MedicoOut, MedicoDetailOut
+from api.services import medicos
 
 router = APIRouter(prefix="/medicos", tags=["Médicos"])
 
@@ -12,6 +12,14 @@ router = APIRouter(prefix="/medicos", tags=["Médicos"])
 @router.get("/", response_model=List[MedicoOut])
 async def listar(id_especialidad: int | None = None):
     return await medicos.listar_medicos(id_especialidad)
+
+
+# -------------------------
+# LISTAR MÉDICOS DETALLE
+# -------------------------
+@router.get("/detalle", response_model=List[MedicoDetailOut])
+async def listar_detalle(id_especialidad: int | None = None):
+    return await medicos.listar_medicos_detalle(id_especialidad)
 
 
 # -------------------------

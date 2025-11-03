@@ -3,18 +3,24 @@ import NavBar from "./components/layout/NavBar.jsx";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
 import Registro from "./components/Registro.jsx";
+import Especialidades from "./components/Especialidades.jsx";
+import Medicos from "./components/Medicos.jsx";
+import Turnos from "./components/Turnos.jsx";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Registro />} />
-      </Routes>
+      <div className="container mt-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/especialidades" element={<Especialidades />} />
+          <Route path="/medicos" element={<Medicos />} />
+          <Route path="/turnos" element={<Turnos />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
-
-export default App;

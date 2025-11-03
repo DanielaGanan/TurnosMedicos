@@ -41,3 +41,23 @@ class UsuarioCreate(BaseModel):
     dni: str
     fecha_nacimiento: date
     direccion: str
+
+
+class UsuarioCreated(BaseModel):
+    id_usuario: int
+    nombre: str
+    email: EmailStr
+    mensaje: str | None = None
+
+
+class UsuarioPublic(BaseModel):
+    id_usuario: int
+    nombre: str
+    apellido: str
+    email: EmailStr
+    telefono: str
+    dni: str
+    fecha_nacimiento: date
+    direccion: str
+    fecha_registro: datetime
+    activo: bool

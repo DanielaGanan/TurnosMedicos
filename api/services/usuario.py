@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List
 from fastapi import HTTPException
-from config.database import db
-from schemas.usuario import Usuario, UsuarioId, UsuarioCreate
+from api.config.database import db
+from api.schemas.usuario import Usuario, UsuarioId, UsuarioCreate, UsuarioPublic
 # Para trabajar con contraseñas encriptadas
 import hashlib
 from passlib.context import CryptContext
@@ -18,17 +18,21 @@ def hash_password(password: str) -> str:
 def verificar_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# Para obtener todos los usuarios
-async def get_all_usuarios() -> List[Usuario]:
-    query = "SELECT * FROM usuarios"
+# Para obtener todos los usuarios (sin contraseñas)
+async def get_all_usuarios() -> List[UsuarioPublic]:
+    query = (
+        "SELECT id_usuario, nombre, apellido, email, telefono, dni, "
+        "fecha_nacimiento, direccion, fecha_registro, activo "
+        "FROM usuarios"
+    )
     rows = await db.fetch_all(query=query)
     return rows
 
 
 # Para obtener un usuario con su id
 async def get_usuarios_by_id(id: int) -> UsuarioId:
-    query = "SELECT * FROM usuarios WHERE id = :id"
-    row = await db.fetch_one(query=query, values={"id": id})
+    query = "SELECT * FROM usuarios WHERE id_usuario = :id_usuario"
+    row = await db.fetch_one(query=query, values={"id_usuario": id})
     if not row:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return row
@@ -168,7 +172,7 @@ async def update_usuario(usuario_id: int, usuario: Usuario) -> UsuarioId:
     }
 
     await db.execute(query=query, values=values)
-    {
+    return {
         **usuario.dict(), 
         "id_usuario": usuario_id,  
         "password": hashed_password,

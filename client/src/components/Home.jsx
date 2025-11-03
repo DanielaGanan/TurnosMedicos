@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TablaUsuarios from "./TablaUsuarios.jsx";
-import "../styles/colors.css"; // para usar tu paleta de colores
+import { usuariosAPI } from "../services/api.js";
+import "../styles/colors.css";
 
 export default function Home() {
   const [usuarios, setUsuarios] = useState([]);
@@ -9,21 +10,18 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/usuarios/")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error al cargar usuarios");
-        }
-        return response.json();
-      })
-      .then((data) => {
+    const load = async () => {
+      try {
+        const data = await usuariosAPI.getAll();
         setUsuarios(data);
+      } catch (err) {
+        const detail = err?.response?.data?.detail;
+        setError(detail || err.message || "Error al cargar usuarios");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      }
+    };
+    load();
   }, []);
 
   return (
@@ -55,3 +53,4 @@ export default function Home() {
     </div>
   );
 }
+

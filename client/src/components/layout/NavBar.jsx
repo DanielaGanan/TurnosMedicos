@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import "../../styles/colors.css";
 
 export default function NavBar() {
   return (
@@ -28,3 +27,4 @@ export default function NavBar() {
     </nav>
   );
 }
+
