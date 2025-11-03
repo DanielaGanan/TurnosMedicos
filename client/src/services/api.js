@@ -1,9 +1,9 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
-// ConfiguraciÃ³n base de la API
-const API_BASE_URL = (import.meta?.env?.VITE_API_URL) || '/api';
+// Base URL: usa VITE_API_URL si existe; si no, fallback a 127.0.0.1:8000
+const API_BASE_URL = import.meta?.env?.VITE_API_URL || 'http://127.0.0.1:8000';
 
-// Crear instancia de axios con configuraciÃ³n por defecto
+// Crear instancia de axios con configuración por defecto
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -21,9 +21,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Interceptor para manejar errores globalmente
@@ -31,14 +29,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      // El servidor respondiÃ³ con un cÃ³digo de estado fuera del rango 2xx
       console.error('Error de respuesta:', error.response.data);
-      console.error('CÃ³digo de estado:', error.response.status);
+      console.error('Código de estado:', error.response.status);
     } else if (error.request) {
-      // La solicitud se realizÃ³ pero no se recibiÃ³ respuesta
       console.error('Error de red:', error.request);
     } else {
-      // Algo sucediÃ³ al configurar la solicitud
       console.error('Error:', error.message);
     }
     return Promise.reject(error);
@@ -49,101 +44,35 @@ api.interceptors.response.use(
 // SERVICIOS DE ESPECIALIDADES
 // ========================================
 export const especialidadesAPI = {
-  // Obtener todas las especialidades
-  getAll: async () => {
-    const response = await api.get('/especialidades/');
-    return response.data;
-  },
-
-  // Obtener una especialidad por ID
-  getById: async (id) => {
-    const response = await api.get(`/especialidades/${id}`);
-    return response.data;
-  },
-
-  // Crear nueva especialidad
-  create: async (data) => {
-    const response = await api.post('/especialidades/', data);
-    return response.data;
-  },
-
-  // Actualizar especialidad
-  update: async (id, data) => {
-    const response = await api.put(`/especialidades/${id}`, data);
-    return response.data;
-  },
-
-  // Eliminar especialidad (soft delete)
-  delete: async (id) => {
-    const response = await api.delete(`/especialidades/${id}`);
-    return response.data;
-  },
+  getAll: async () => (await api.get('/especialidades/')).data,
+  getById: async (id) => (await api.get(`/especialidades/${id}`)).data,
+  create: async (data) => (await api.post('/especialidades/', data)).data,
+  update: async (id, data) => (await api.put(`/especialidades/${id}`, data)).data,
+  delete: async (id) => (await api.delete(`/especialidades/${id}`)).data,
 };
 
 // ========================================
-// SERVICIOS DE MÃ‰DICOS
+// SERVICIOS DE MÉDICOS
 // ========================================
 export const medicosAPI = {
-  // Obtener todos los mÃ©dicos (con filtro opcional por especialidad)
   getAll: async (idEspecialidad = null) => {
-    const url = idEspecialidad 
-      ? `/medicos/?id_especialidad=${idEspecialidad}`
-      : '/medicos/';
-    const response = await api.get(url);
-    return response.data;
+    const url = idEspecialidad ? `/medicos/?id_especialidad=${idEspecialidad}` : '/medicos/';
+    return (await api.get(url)).data;
   },
-
-  // Obtener un mÃ©dico por ID
-  getById: async (id) => {
-    const response = await api.get(`/medicos/${id}`);
-    return response.data;
-  },
-
-  // Crear nuevo mÃ©dico
-  create: async (data) => {
-    const response = await api.post('/medicos/', data);
-    return response.data;
-  },
-
-  // Actualizar mÃ©dico
-  update: async (id, data) => {
-    const response = await api.put(`/medicos/${id}`, data);
-    return response.data;
-  },
-
-  // Eliminar mÃ©dico (soft delete)
-  delete: async (id) => {
-    const response = await api.delete(`/medicos/${id}`);
-    return response.data;
-  },
+  getById: async (id) => (await api.get(`/medicos/${id}`)).data,
+  create: async (data) => (await api.post('/medicos/', data)).data,
+  update: async (id, data) => (await api.put(`/medicos/${id}`, data)).data,
+  delete: async (id) => (await api.delete(`/medicos/${id}`)).data,
 };
 
 // ========================================
 // SERVICIOS DE USUARIOS
 // ========================================
 export const usuariosAPI = {
-  // Obtener todos los usuarios
-  getAll: async () => {
-    const response = await api.get('/usuarios/');
-    return response.data;
-  },
-
-  // Login (cuando lo implementes en el backend)
-  login: async (email, password) => {
-    const response = await api.post('/usuarios/login', { email, password });
-    return response.data;
-  },
-  // Activar / Desactivar (requiere endpoints en backend)
-  activate: async (id) => {
-    const response = await api.post(`/usuarios/${id}/activate`);
-    return response.data;
-  },
-  deactivate: async (id) => {
-    const response = await api.post(`/usuarios/${id}/deactivate`);
-    return response.data;
-  },
+  getAll: async () => (await api.get('/usuarios/')).data,
+  login: async (email, password) => (await api.post('/usuarios/login', { email, password })).data,
+  activate: async (id) => (await api.post(`/usuarios/${id}/activate`)).data,
+  deactivate: async (id) => (await api.post(`/usuarios/${id}/deactivate`)).data,
 };
 
-// Exportar la instancia de axios por si se necesita en algÃºn lugar
 export default api;
-

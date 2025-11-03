@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import api from "../services/api.js";
 
 export default function Registro() {
   const navigate = useNavigate();
@@ -27,37 +28,25 @@ export default function Registro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/usuarios/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMensaje("Usuario registrado exitosamente");
-        try {
-          if (data && data.id_usuario) {
-            login({ id_usuario: data.id_usuario, nombre: data.nombre, email: data.email });
-            navigate("/mis-turnos");
-          }
-        } catch {}
-        setFormData({
-          nombre: "",
-          apellido: "",
-          email: "",
-          password: "",
-          telefono: "",
-          dni: "",
-          fecha_nacimiento: "",
-          direccion: "",
-        });
-      } else {
-        setMensaje(data.detail || "Error al registrar");
+      const { data } = await api.post('/usuarios/register', formData);
+      setMensaje("Usuario registrado exitosamente");
+      if (data && data.id_usuario) {
+        login({ id_usuario: data.id_usuario, nombre: data.nombre, email: data.email });
+        navigate("/mis-turnos");
       }
+      setFormData({
+        nombre: "",
+        apellido: "",
+        email: "",
+        password: "",
+        telefono: "",
+        dni: "",
+        fecha_nacimiento: "",
+        direccion: "",
+      });
     } catch (error) {
-      setMensaje("Error de conexión: " + error.message);
+      const detail = error?.response?.data?.detail;
+      setMensaje(detail || ("Error de conexión: " + (error.message || "")));
     }
   };
 

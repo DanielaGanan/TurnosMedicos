@@ -11,6 +11,6 @@ class EspecialidadCreate(EspecialidadBase):
 
 class EspecialidadOut(EspecialidadBase):
     id_especialidad: int
-
-    class Config:
-        orm_mode = True
+    
+    # Pydantic v2: reemplaza orm_mode por from_attributes
+    model_config = {"from_attributes": True}

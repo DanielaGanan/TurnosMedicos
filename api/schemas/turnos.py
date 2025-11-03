@@ -17,9 +17,9 @@ class TurnoCreate(TurnoBase):
 
 class TurnoOut(TurnoBase):
     id_turno: int
-
-    class Config:
-        orm_mode = True
+    
+    # Pydantic v2
+    model_config = {"from_attributes": True}
 
 
 class TurnoDetailOut(TurnoOut):

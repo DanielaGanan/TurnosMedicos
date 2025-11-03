@@ -15,9 +15,9 @@ class MedicoCreate(MedicoBase):
 
 class MedicoOut(MedicoBase):
     id_doctor: int
-
-    class Config:
-        orm_mode = True
+    
+    # Pydantic v2
+    model_config = {"from_attributes": True}
 
 
 class MedicoDetailOut(MedicoOut):
