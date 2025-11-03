@@ -13,9 +13,14 @@
 .admin-menu .nav-link{
   color: var(--text-light, #f8f9fa);
   padding-left: .25rem;
+  border-radius: 8px;
 }
 .admin-menu .nav-link:hover{
   color: var(--accent-light, #83A6CE);
+}
+.admin-menu .nav-link.active{
+  background: linear-gradient(90deg, rgba(196,140,179,0.45), transparent);
+  color: var(--text-light);
 }
 
 .admin-main{
@@ -26,17 +31,16 @@
 .card{
   background-color: rgba(13,30,76,0.85);
   color: var(--text-light, #f8f9fa);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(2,6,23,0.45);
 }
 
 .btn-primary{
-  background-color: var(--primary-light, #83A6CE);
-  border-color: var(--primary-light, #83A6CE);
+  background-color: var(--accent-medium, #C48CB3);
+  border-color: var(--accent-medium, #C48CB3);
 }
 .btn-primary:hover{
-  background-color: var(--primary-medium, #26415E);
-  border-color: var(--primary-medium, #26415E);
+  background-color: var(--accent-pale, #E5C9D7);
+  border-color: var(--accent-pale, #E5C9D7);
 }
-

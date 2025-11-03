@@ -26,7 +26,6 @@ export default function Registro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await fetch("http://localhost:8000/usuarios/register", {
         method: "POST",
@@ -38,7 +37,6 @@ export default function Registro() {
 
       if (response.ok) {
         setMensaje("Usuario registrado exitosamente");
-        // Si el backend devuelve los datos mínimos, logueamos automáticamente.
         try {
           if (data && data.id_usuario) {
             login({ id_usuario: data.id_usuario, nombre: data.nombre, email: data.email });
@@ -72,108 +70,43 @@ export default function Registro() {
       <form onSubmit={handleSubmit} className="row g-3">
         <div className="col-md-6">
           <label className="form-label">Nombre</label>
-          <input
-            type="text"
-            name="nombre"
-            className="form-control"
-            value={formData.nombre}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="nombre" className="form-control" value={formData.nombre} onChange={handleChange} required />
         </div>
-
         <div className="col-md-6">
           <label className="form-label">Apellido</label>
-          <input
-            type="text"
-            name="apellido"
-            className="form-control"
-            value={formData.apellido}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="apellido" className="form-control" value={formData.apellido} onChange={handleChange} required />
         </div>
-
         <div className="col-md-6">
           <label className="form-label">Email</label>
-          <input
-            type="email"
-            name="email"
-            className="form-control"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          <input type="email" name="email" className="form-control" value={formData.email} onChange={handleChange} required />
         </div>
-
         <div className="col-md-6">
           <label className="form-label">DNI</label>
-          <input
-            type="text"
-            name="dni"
-            className="form-control"
-            value={formData.dni}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="dni" className="form-control" value={formData.dni} onChange={handleChange} required />
         </div>
-
         <div className="col-md-6">
           <label className="form-label">Teléfono</label>
-          <input
-            type="text"
-            name="telefono"
-            className="form-control"
-            value={formData.telefono}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="telefono" className="form-control" value={formData.telefono} onChange={handleChange} required />
         </div>
-
         <div className="col-md-6">
           <label className="form-label">Fecha de nacimiento</label>
-          <input
-            type="date"
-            name="fecha_nacimiento"
-            className="form-control"
-            value={formData.fecha_nacimiento}
-            onChange={handleChange}
-            required
-          />
+          <input type="date" name="fecha_nacimiento" className="form-control" value={formData.fecha_nacimiento} onChange={handleChange} required />
         </div>
-
         <div className="col-12">
           <label className="form-label">Dirección</label>
-          <input
-            type="text"
-            name="direccion"
-            className="form-control"
-            value={formData.direccion}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="direccion" className="form-control" value={formData.direccion} onChange={handleChange} required />
         </div>
-
         <div className="col-12">
           <label className="form-label">Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            className="form-control"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          <input type="password" name="password" className="form-control" value={formData.password} onChange={handleChange} required />
         </div>
-
         <div className="col-12">
           <button type="submit" className="btn btn-primary">Registrarse</button>
         </div>
       </form>
 
-      <p className="mt-3">
-        ¿Ya tenés cuenta? <a href="/login">Iniciá sesión acá</a>
-      </p>
+      <p className="mt-3">¿Ya tenés cuenta? <a href="/login">Iniciá sesión acá</a></p>
     </div>
   );
 }
+
