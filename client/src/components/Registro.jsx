@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Registro() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -34,6 +38,13 @@ export default function Registro() {
 
       if (response.ok) {
         setMensaje("Usuario registrado exitosamente");
+        // Si el backend devuelve los datos mínimos, logueamos automáticamente.
+        try {
+          if (data && data.id_usuario) {
+            login({ id_usuario: data.id_usuario, nombre: data.nombre, email: data.email });
+            navigate("/mis-turnos");
+          }
+        } catch {}
         setFormData({
           nombre: "",
           apellido: "",
@@ -166,4 +177,3 @@ export default function Registro() {
     </div>
   );
 }
-

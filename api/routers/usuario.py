@@ -34,3 +34,15 @@ async def register_usuario(usuario: UsuarioCreate):
     
     nuevo_usuario = await services.create_usuario(usuario)
     return nuevo_usuario
+
+
+# Activar usuario
+@router.post("/{id_usuario}/activate")
+async def activar_usuario(id_usuario: int):
+    return await services.activate_usuario(id_usuario)
+
+
+# Desactivar usuario (soft delete)
+@router.post("/{id_usuario}/deactivate")
+async def desactivar_usuario(id_usuario: int):
+    return await services.delete_usuario(id_usuario)

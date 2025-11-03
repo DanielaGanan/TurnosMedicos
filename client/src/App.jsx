@@ -3,9 +3,14 @@ import NavBar from "./components/layout/NavBar.jsx";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
 import Registro from "./components/Registro.jsx";
-import Especialidades from "./components/Especialidades.jsx";
-import Medicos from "./components/Medicos.jsx";
-import Turnos from "./components/Turnos.jsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
+import MisTurnos from "./components/paciente/MisTurnos.jsx";
+import AdminProtectedRoute from "./components/auth/AdminProtectedRoute.jsx";
+import AdminLogin from "./components/admin/AdminLogin.jsx";
+import AdminLayout from "./components/admin/AdminLayout.jsx";
+import UsuariosAdmin from "./components/admin/UsuariosAdmin.jsx";
+import EspecialidadesAdmin from "./components/admin/EspecialidadesAdmin.jsx";
+import MedicosAdmin from "./components/admin/MedicosAdmin.jsx";
 
 export default function App() {
   return (
@@ -16,9 +21,28 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/especialidades" element={<Especialidades />} />
-          <Route path="/medicos" element={<Medicos />} />
-          <Route path="/turnos" element={<Turnos />} />
+          <Route
+            path="/mis-turnos"
+            element={
+              <ProtectedRoute>
+                <MisTurnos />
+              </ProtectedRoute>
+            }
+          />
+          {/* Admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin/*"
+            element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }
+          >
+            <Route path="usuarios" element={<UsuariosAdmin />} />
+            <Route path="especialidades" element={<EspecialidadesAdmin />} />
+            <Route path="medicos" element={<MedicosAdmin />} />
+          </Route>
         </Routes>
       </div>
     </BrowserRouter>

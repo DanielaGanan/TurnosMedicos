@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+﻿from fastapi import HTTPException, status
 from api.config.database import db
 from api.models import especialidades
 
@@ -24,21 +24,44 @@ async def obtener_especialidad(id_especialidad: int):
 
 
 # -------------------------
-# CREAR NUEVA ESPECIALIDAD
+# CREAR NUEVA ESPECIALIDAD (reactiva si existe inactiva)
 # -------------------------
 async def crear_especialidad(payload):
-    # Validar nombre único
-    q_check = especialidades.select().where(especialidades.c.nombre == payload.nombre)
-    if await db.fetch_one(q_check):
-        raise HTTPException(status_code=400, detail="Ya existe una especialidad con ese nombre")
+    try:
+        q_exist = especialidades.select().where(especialidades.c.nombre == payload.nombre)
+        existente = await db.fetch_one(q_exist)
 
-    q_insert = especialidades.insert().values(
-        nombre=payload.nombre,
-        descripcion=payload.descripcion,
-        activo=payload.activo
-    )
-    new_id = await db.execute(q_insert)
-    return await db.fetch_one(especialidades.select().where(especialidades.c.id_especialidad == new_id))
+        if existente:
+            # Si ya existe activa, no permitir duplicado
+            if existente["activo"]:
+                raise HTTPException(status_code=400, detail="Ya existe una especialidad con ese nombre")
+            # Si existe inactiva, la reactivamos y actualizamos la descripción
+            q_update = (
+                especialidades.update()
+                .where(especialidades.c.id_especialidad == existente["id_especialidad"])
+                .values(
+                    nombre=payload.nombre,
+                    descripcion=payload.descripcion,
+                    activo=True,
+                )
+            )
+            await db.execute(q_update)
+            return await db.fetch_one(
+                especialidades.select().where(especialidades.c.id_especialidad == existente["id_especialidad"])  # type: ignore
+            )
+
+        # No existe: crear normalmente
+        q_insert = especialidades.insert().values(
+            nombre=payload.nombre,
+            descripcion=payload.descripcion,
+            activo=payload.activo,
+        )
+        new_id = await db.execute(q_insert)
+        return await db.fetch_one(especialidades.select().where(especialidades.c.id_especialidad == new_id))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al crear especialidad: {e}")
 
 
 # -------------------------
@@ -51,7 +74,7 @@ async def actualizar_especialidad(id_especialidad: int, payload):
     if not especialidad_existente:
         raise HTTPException(status_code=404, detail="Especialidad no encontrada")
 
-    # Validar nombre único si cambió
+    # Validar nombre unico
     if payload.nombre != especialidad_existente.nombre:
         q_check = especialidades.select().where(especialidades.c.nombre == payload.nombre)
         if await db.fetch_one(q_check):
@@ -83,3 +106,4 @@ async def eliminar_especialidad(id_especialidad: int):
     if not result:
         raise HTTPException(status_code=404, detail="Especialidad no encontrada")
     return {"message": "Especialidad eliminada correctamente"}
+

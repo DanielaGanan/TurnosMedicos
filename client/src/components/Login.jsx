@@ -1,30 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+import { usuariosAPI } from '../services/api.js';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) navigate('/mis-turnos');
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await fetch('http://localhost:8000/usuarios/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMensaje(`¡Bienvenido ${data.nombre}!`);
-        localStorage.setItem('usuario', JSON.stringify(data));
-      } else {
-        setMensaje(data.detail || 'Error al iniciar sesión');
-      }
+      const data = await usuariosAPI.login(email, password);
+      login(data);
+      setMensaje(`¡Bienvenido ${data.nombre}!`);
+      navigate('/mis-turnos');
     } catch (error) {
-      setMensaje('Error de conexión: ' + error.message);
+      const detail = error?.response?.data?.detail;
+      setMensaje(detail || 'Error al iniciar sesión');
     }
   };
 
@@ -62,10 +61,7 @@ export default function Login() {
         </div>
       </form>
 
-      <p className="mt-3">
-        ¿No tenés cuenta? <a href="/registro">Registrate acá</a>
-      </p>
+      <p className="mt-3">¿No tenés cuenta? <a href="/registro">Registrate acá</a></p>
     </div>
   );
 }
-

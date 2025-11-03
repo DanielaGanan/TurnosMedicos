@@ -15,6 +15,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -41,4 +42,3 @@ app.include_router(usuario_router, prefix="/usuarios")
 app.include_router(especialidades.router)
 app.include_router(medicos.router)
 app.include_router(turnos.router)
-

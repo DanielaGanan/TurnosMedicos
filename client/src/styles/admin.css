@@ -1,0 +1,42 @@
+/* Admin area styles reusing the dark palette */
+:root{
+  --admin-aside-bg: var(--primary-deep, #0D1E4C);
+  --admin-aside-border: rgba(255,255,255,0.06);
+}
+
+.admin-aside{
+  background: linear-gradient(180deg, var(--admin-aside-bg), rgba(13,30,76,0.92));
+  color: var(--text-light, #f8f9fa);
+  border-right: 1px solid var(--admin-aside-border);
+}
+
+.admin-menu .nav-link{
+  color: var(--text-light, #f8f9fa);
+  padding-left: .25rem;
+}
+.admin-menu .nav-link:hover{
+  color: var(--accent-light, #83A6CE);
+}
+
+.admin-main{
+  background: transparent;
+  color: var(--text-light, #f8f9fa);
+}
+
+.card{
+  background-color: rgba(13,30,76,0.85);
+  color: var(--text-light, #f8f9fa);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+}
+
+.btn-primary{
+  background-color: var(--primary-light, #83A6CE);
+  border-color: var(--primary-light, #83A6CE);
+}
+.btn-primary:hover{
+  background-color: var(--primary-medium, #26415E);
+  border-color: var(--primary-medium, #26415E);
+}
+

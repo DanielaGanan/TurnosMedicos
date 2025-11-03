@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function NavBar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
   return (
     <nav className="navbar navbar-expand-lg navbar-custom">
       <div className="container">
@@ -18,13 +25,23 @@ export default function NavBar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item"><Link className="nav-link" to="/especialidades">Especialidades</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/medicos">Médicos</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/turnos">Turnos</Link></li>
+            {isAuthenticated && (
+              <li className="nav-item"><Link className="nav-link" to="/mis-turnos">Mis Turnos</Link></li>
+            )}
+            {!isAuthenticated ? (
+              <>
+                <li className="nav-item"><Link className="nav-link" to="/login">Iniciar Sesión</Link></li>
+                <li className="nav-item"><Link className="nav-link" to="/registro">Registrarse</Link></li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item"><span className="nav-link">Hola, {user?.nombre}</span></li>
+                <li className="nav-item"><button className="btn btn-link nav-link" onClick={handleLogout}>Cerrar sesión</button></li>
+              </>
+            )}
           </ul>
         </div>
       </div>
     </nav>
   );
 }
-

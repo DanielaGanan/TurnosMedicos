@@ -1,9 +1,9 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
-// Configuración base de la API
-const API_BASE_URL = 'http://localhost:8000';
+// ConfiguraciÃ³n base de la API
+const API_BASE_URL = (import.meta?.env?.VITE_API_URL) || '/api';
 
-// Crear instancia de axios con configuración por defecto
+// Crear instancia de axios con configuraciÃ³n por defecto
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -31,14 +31,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      // El servidor respondió con un código de estado fuera del rango 2xx
+      // El servidor respondiÃ³ con un cÃ³digo de estado fuera del rango 2xx
       console.error('Error de respuesta:', error.response.data);
-      console.error('Código de estado:', error.response.status);
+      console.error('CÃ³digo de estado:', error.response.status);
     } else if (error.request) {
-      // La solicitud se realizó pero no se recibió respuesta
+      // La solicitud se realizÃ³ pero no se recibiÃ³ respuesta
       console.error('Error de red:', error.request);
     } else {
-      // Algo sucedió al configurar la solicitud
+      // Algo sucediÃ³ al configurar la solicitud
       console.error('Error:', error.message);
     }
     return Promise.reject(error);
@@ -51,7 +51,7 @@ api.interceptors.response.use(
 export const especialidadesAPI = {
   // Obtener todas las especialidades
   getAll: async () => {
-    const response = await api.get('/especialidades');
+    const response = await api.get('/especialidades/');
     return response.data;
   },
 
@@ -63,7 +63,7 @@ export const especialidadesAPI = {
 
   // Crear nueva especialidad
   create: async (data) => {
-    const response = await api.post('/especialidades', data);
+    const response = await api.post('/especialidades/', data);
     return response.data;
   },
 
@@ -81,37 +81,37 @@ export const especialidadesAPI = {
 };
 
 // ========================================
-// SERVICIOS DE MÉDICOS
+// SERVICIOS DE MÃ‰DICOS
 // ========================================
 export const medicosAPI = {
-  // Obtener todos los médicos (con filtro opcional por especialidad)
+  // Obtener todos los mÃ©dicos (con filtro opcional por especialidad)
   getAll: async (idEspecialidad = null) => {
     const url = idEspecialidad 
-      ? `/medicos?id_especialidad=${idEspecialidad}`
-      : '/medicos';
+      ? `/medicos/?id_especialidad=${idEspecialidad}`
+      : '/medicos/';
     const response = await api.get(url);
     return response.data;
   },
 
-  // Obtener un médico por ID
+  // Obtener un mÃ©dico por ID
   getById: async (id) => {
     const response = await api.get(`/medicos/${id}`);
     return response.data;
   },
 
-  // Crear nuevo médico
+  // Crear nuevo mÃ©dico
   create: async (data) => {
-    const response = await api.post('/medicos', data);
+    const response = await api.post('/medicos/', data);
     return response.data;
   },
 
-  // Actualizar médico
+  // Actualizar mÃ©dico
   update: async (id, data) => {
     const response = await api.put(`/medicos/${id}`, data);
     return response.data;
   },
 
-  // Eliminar médico (soft delete)
+  // Eliminar mÃ©dico (soft delete)
   delete: async (id) => {
     const response = await api.delete(`/medicos/${id}`);
     return response.data;
@@ -124,7 +124,7 @@ export const medicosAPI = {
 export const usuariosAPI = {
   // Obtener todos los usuarios
   getAll: async () => {
-    const response = await api.get('/usuarios');
+    const response = await api.get('/usuarios/');
     return response.data;
   },
 
@@ -133,7 +133,17 @@ export const usuariosAPI = {
     const response = await api.post('/usuarios/login', { email, password });
     return response.data;
   },
+  // Activar / Desactivar (requiere endpoints en backend)
+  activate: async (id) => {
+    const response = await api.post(`/usuarios/${id}/activate`);
+    return response.data;
+  },
+  deactivate: async (id) => {
+    const response = await api.post(`/usuarios/${id}/deactivate`);
+    return response.data;
+  },
 };
 
-// Exportar la instancia de axios por si se necesita en algún lugar
+// Exportar la instancia de axios por si se necesita en algÃºn lugar
 export default api;
+
