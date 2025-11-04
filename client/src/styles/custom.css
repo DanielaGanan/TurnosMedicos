@@ -100,3 +100,14 @@ a { color: var(--accent-light); }
   box-shadow: 0 6px 18px rgba(196,140,179,0.35);
 }
 .feature-card:hover{ transform: translateY(-2px); transition: transform .18s ease; }
+
+/* footer */
+.app-footer{
+  background: linear-gradient(90deg, rgba(13,30,76,0.95), rgba(38,65,94,0.95), rgba(196,140,179,0.28));
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.app-footer .credits{ font-size: .95rem; }
+.app-footer .credit-name{
+  color: var(--accent-medium);
+  font-weight: 700;
+}

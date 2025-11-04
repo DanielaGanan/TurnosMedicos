@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavBar from "./components/layout/NavBar.jsx";
+import Footer from "./components/layout/Footer.jsx";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
 import Registro from "./components/Registro.jsx";
@@ -45,6 +46,7 @@ export default function App() {
           </Route>
         </Routes>
       </div>
+      <Footer />
     </BrowserRouter>
   );
 }
