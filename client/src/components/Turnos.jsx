@@ -30,6 +30,17 @@ export default function Turnos() {
   const [form, setForm] = useState({ id_usuario: "", id_doctor: "", fecha_hora: "", motivo: "" });
   const [editingId, setEditingId] = useState(null);
 
+  const normalizeDetail = (detail) => {
+    if (!detail) return "";
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      const parts = detail.map((e) => (e && e.msg) ? e.msg : String(e));
+      return parts.join("; ");
+    }
+    if (typeof detail === "object") return detail.msg || JSON.stringify(detail);
+    try { return String(detail); } catch { return ""; }
+  };
+
   const fetchTurnos = async (opts = {}) => {
     setLoading(true);
     setError("");
@@ -38,7 +49,7 @@ export default function Turnos() {
       setTurnos(Array.isArray(data) ? data : []);
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al cargar turnos");
+      setError(normalizeDetail(detail || err.message || "Error al cargar turnos"));
     } finally {
       setLoading(false);
     }
@@ -47,13 +58,22 @@ export default function Turnos() {
   const fetchAuxData = async () => {
     try {
       const [u, m] = await Promise.all([
-        usuariosAPI.getAll().catch(() => []),
-        medicosAPI.getAll().catch(() => []),
+        usuariosAPI.getAll().catch((err) => {
+          const detail = err?.response?.data?.detail;
+          setError(normalizeDetail(detail || err.message || "Error al cargar usuarios"));
+          return [];
+        }),
+        medicosAPI.getAll().catch((err) => {
+          const detail = err?.response?.data?.detail;
+          setError(normalizeDetail(detail || err.message || "Error al cargar médicos"));
+          return [];
+        }),
       ]);
       setUsuarios(Array.isArray(u) ? u : []);
       setMedicos(Array.isArray(m) ? m : []);
-    } catch {
-      // ignorar, ya manejado con catch por cada promesa
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setError(normalizeDetail(detail || err.message || "Error al cargar datos auxiliares"));
     }
   };
 
@@ -93,7 +113,7 @@ export default function Turnos() {
     const payload = {
       id_usuario: Number(form.id_usuario),
       id_doctor: Number(form.id_doctor),
-      fecha_hora: form.fecha_hora, // se envía en formato datetime-local
+      fecha_hora: form.fecha_hora,
       motivo: form.motivo || null,
       activo: true,
     };
@@ -113,7 +133,7 @@ export default function Turnos() {
       fetchTurnos();
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al guardar el turno");
+      setError(normalizeDetail(detail || err.message || "Error al guardar el turno"));
     }
   };
 
@@ -133,11 +153,11 @@ export default function Turnos() {
     if (!window.confirm("¿Eliminar este turno?")) return;
     try {
       await turnosAPI.delete(id);
-      setSuccess("Turno eliminado");
+      setSuccess("Turno eliminado correctamente");
       fetchTurnos();
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al eliminar el turno");
+      setError(normalizeDetail(detail || err.message || "Error al eliminar turno"));
     }
   };
 
@@ -145,10 +165,7 @@ export default function Turnos() {
     return usuarios
       .slice()
       .sort((a, b) => (a?.nombre || "").localeCompare(b?.nombre || ""))
-      .map((u) => ({
-        value: u.id_usuario ?? u.id,
-        label: `${u.nombre ?? ""} ${u.apellido ?? ""}`.trim(),
-      }));
+      .map((u) => ({ value: u.id_usuario, label: `${u.nombre} ${u.apellido}` }));
   }, [usuarios]);
 
   const medicosOptions = useMemo(() => {
@@ -161,8 +178,7 @@ export default function Turnos() {
   const usuarioById = useMemo(() => {
     const map = {};
     for (const u of usuarios) {
-      const label = `${u.nombre ?? ""} ${u.apellido ?? ""}`.trim();
-      map[u.id_usuario ?? u.id] = label || (u.email ?? "");
+      map[u.id_usuario] = `${u.nombre} ${u.apellido}`;
     }
     return map;
   }, [usuarios]);
@@ -179,13 +195,12 @@ export default function Turnos() {
     <div className="container mt-4">
       <h2 className="fw-bold mb-3">Turnos</h2>
 
-      {/* Formulario Crear/Editar */}
       <div className="card mb-4">
         <div className="card-body">
           <h5 className="card-title mb-3">{editingId ? "Editar turno" : "Nuevo turno"}</h5>
 
           {success && <div className="alert alert-success py-2">{success}</div>}
-          {error && <div className="alert alert-danger py-2">{error}</div>}
+          {error && <div className="alert alert-danger py-2">{String(error)}</div>}
 
           <form className="row g-3" onSubmit={onFormSubmit}>
             <div className="col-md-4">
@@ -256,7 +271,6 @@ export default function Turnos() {
         </div>
       </div>
 
-      {/* Filtros */}
       <form className="row g-3 mb-3" onSubmit={onFilterSubmit}>
         <div className="col-sm-4">
           <label className="form-label">ID Usuario</label>
@@ -287,7 +301,7 @@ export default function Turnos() {
       </form>
 
       {loading && <p className="text-muted">Cargando turnos...</p>}
-      {error && <p className="text-danger">{error}</p>}
+      {error && <p className="text-danger">{String(error)}</p>}
 
       {!loading && !error && (
         <div className="table-responsive">
@@ -337,3 +351,4 @@ export default function Turnos() {
     </div>
   );
 }
+

@@ -12,14 +12,15 @@ async def listar(id_usuario: int | None = None, id_doctor: int | None = None):
     return await service.listar_turnos(id_usuario, id_doctor)
 
 
-@router.get("/{id_turno}", response_model=TurnoOut)
-async def obtener(id_turno: int):
-    return await service.obtener_turno(id_turno)
-
-
+# Importante: definir rutas fijas antes que rutas dinámicas para evitar 422 por coincidencia
 @router.get("/detalle", response_model=List[TurnoDetailOut])
 async def listar_detalle(id_usuario: int | None = None, id_doctor: int | None = None):
     return await service.listar_turnos_detalle(id_usuario, id_doctor)
+
+
+@router.get("/{id_turno}", response_model=TurnoOut)
+async def obtener(id_turno: int):
+    return await service.obtener_turno(id_turno)
 
 
 @router.post("/", response_model=TurnoOut, status_code=status.HTTP_201_CREATED)

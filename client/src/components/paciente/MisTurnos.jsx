@@ -15,6 +15,17 @@ export default function MisTurnos() {
 
   const [form, setForm] = useState({ id_doctor: "", fecha_hora: "", motivo: "" });
 
+  const normalizeDetail = (detail) => {
+    if (!detail) return "";
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      const parts = detail.map((e) => (e && e.msg) ? e.msg : String(e));
+      return parts.join("; ");
+    }
+    if (typeof detail === "object") return detail.msg || JSON.stringify(detail);
+    try { return String(detail); } catch { return ""; }
+  };
+
   const medicosOptions = useMemo(() => {
     return medicos
       .slice()
@@ -27,12 +38,12 @@ export default function MisTurnos() {
     setLoading(true);
     setError("");
     try {
-      // Usamos endpoint de detalle para mostrar nombres
+      // Usamos endpoint de detalle (backend ya alineado con la DB)
       const data = await turnosAPI.getAllDetail({ id_usuario: idUsuario });
       setTurnos(Array.isArray(data) ? data : []);
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al cargar turnos");
+      setError(normalizeDetail(detail || err.message || "Error al cargar turnos"));
     } finally {
       setLoading(false);
     }
@@ -42,8 +53,10 @@ export default function MisTurnos() {
     try {
       const data = await medicosAPI.getAll();
       setMedicos(Array.isArray(data) ? data : []);
-    } catch {
+    } catch (err) {
       setMedicos([]);
+      const detail = err?.response?.data?.detail;
+      setError(normalizeDetail(detail || err.message || "Error al cargar médicos"));
     }
   };
 
@@ -85,7 +98,7 @@ export default function MisTurnos() {
       loadData();
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al reservar turno");
+      setError(normalizeDetail(detail || err.message || "Error al reservar turno"));
     }
   };
 
@@ -98,7 +111,7 @@ export default function MisTurnos() {
       loadData();
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al cancelar turno");
+      setError(normalizeDetail(detail || err.message || "Error al cancelar turno"));
     }
   };
 

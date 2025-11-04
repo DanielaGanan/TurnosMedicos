@@ -1,15 +1,27 @@
 import axios from 'axios';
 
 // Base URL: usa VITE_API_URL si existe; si no, fallback a 127.0.0.1:8000
-const API_BASE_URL = import.meta?.env?.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = (import.meta && import.meta.env && import.meta.env.VITE_API_URL)
+  ? import.meta.env.VITE_API_URL
+  : 'http://127.0.0.1:8000';
+
+// Normalizador de mensajes de error (Pydantic v2 y genéricos)
+function normalizeDetail(detail) {
+  if (!detail) return '';
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail.map((e) => (e && e.msg) ? e.msg : String(e));
+    return parts.join('; ');
+  }
+  if (typeof detail === 'object') return detail.msg || JSON.stringify(detail);
+  try { return String(detail); } catch { return ''; }
+}
 
 // Crear instancia de axios con configuración por defecto
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 segundos
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 10000,
 });
 
 // Interceptor para agregar el token si existe (para futuro login)
@@ -17,6 +29,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
+      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -24,17 +37,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor para manejar errores globalmente
+// Interceptor para manejar errores globalmente y normalizar "detail"
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response) {
-      console.error('Error de respuesta:', error.response.data);
-      console.error('Código de estado:', error.response.status);
-    } else if (error.request) {
+    if (error && error.response) {
+      const data = error.response.data || {};
+      const msg = normalizeDetail(data.detail) || error.message || '';
+      try { error.response.data.detail = msg; } catch {}
+      console.error('Error de respuesta:', data);
+      console.error('Codigo de estado:', error.response.status);
+    } else if (error && error.request) {
       console.error('Error de red:', error.request);
     } else {
-      console.error('Error:', error.message);
+      console.error('Error:', error ? error.message : 'desconocido');
     }
     return Promise.reject(error);
   }

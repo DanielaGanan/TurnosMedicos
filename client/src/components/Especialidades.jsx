@@ -10,6 +10,17 @@ export default function Especialidades() {
   const [form, setForm] = useState({ nombre: "", descripcion: "", activo: true });
   const [editingId, setEditingId] = useState(null);
 
+  const normalizeDetail = (detail) => {
+    if (!detail) return "";
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      const parts = detail.map((e) => (e && e.msg) ? e.msg : String(e));
+      return parts.join("; ");
+    }
+    if (typeof detail === "object") return detail.msg || JSON.stringify(detail);
+    try { return String(detail); } catch { return ""; }
+  };
+
   const fetchData = async () => {
     setLoading(true);
     setError("");
@@ -18,15 +29,13 @@ export default function Especialidades() {
       setItems(Array.isArray(data) ? data : []);
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al cargar especialidades");
+      setError(normalizeDetail(detail || err.message || "Error al cargar especialidades"));
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const onFormChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -61,7 +70,7 @@ export default function Especialidades() {
       fetchData();
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al guardar");
+      setError(normalizeDetail(detail || err.message || "Error al guardar"));
     }
   };
 
@@ -80,7 +89,7 @@ export default function Especialidades() {
       fetchData();
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al eliminar");
+      setError(normalizeDetail(detail || err.message || "Error al eliminar"));
     }
   };
 
@@ -96,47 +105,21 @@ export default function Especialidades() {
           <form className="row g-3" onSubmit={onFormSubmit}>
             <div className="col-md-4">
               <label className="form-label">Nombre</label>
-              <input
-                type="text"
-                name="nombre"
-                className="form-control"
-                value={form.nombre}
-                onChange={onFormChange}
-                required
-              />
+              <input type="text" name="nombre" className="form-control" value={form.nombre} onChange={onFormChange} required />
             </div>
             <div className="col-md-6">
               <label className="form-label">Descripción</label>
-              <input
-                type="text"
-                name="descripcion"
-                className="form-control"
-                value={form.descripcion}
-                onChange={onFormChange}
-              />
+              <input type="text" name="descripcion" className="form-control" value={form.descripcion} onChange={onFormChange} />
             </div>
             <div className="col-md-2 d-flex align-items-center">
               <div className="form-check mt-4">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="esp-activo"
-                  name="activo"
-                  checked={!!form.activo}
-                  onChange={onFormChange}
-                />
-                <label className="form-check-label" htmlFor="esp-activo">
-                  Activo
-                </label>
+                <input className="form-check-input" type="checkbox" id="esp-activo" name="activo" checked={!!form.activo} onChange={onFormChange} />
+                <label className="form-check-label" htmlFor="esp-activo">Activo</label>
               </div>
             </div>
             <div className="col-12 d-flex gap-2">
-              <button className="btn btn-primary" type="submit">
-                {editingId ? "Guardar cambios" : "Crear"}
-              </button>
-              <button className="btn btn-outline-secondary" type="button" onClick={clearForm}>
-                Limpiar
-              </button>
+              <button className="btn btn-primary" type="submit">{editingId ? "Guardar cambios" : "Crear"}</button>
+              <button className="btn btn-outline-secondary" type="button" onClick={clearForm}>Limpiar</button>
             </div>
           </form>
         </div>

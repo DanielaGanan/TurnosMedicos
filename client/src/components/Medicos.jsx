@@ -20,6 +20,17 @@ export default function Medicos() {
     activo: true,
   });
 
+  const normalizeDetail = (detail) => {
+    if (!detail) return "";
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      const parts = detail.map((e) => (e && e.msg) ? e.msg : String(e));
+      return parts.join("; ");
+    }
+    if (typeof detail === "object") return detail.msg || JSON.stringify(detail);
+    try { return String(detail); } catch { return ""; }
+  };
+
   const fetchData = async (id_especialidad = null) => {
     setLoading(true);
     setError("");
@@ -28,7 +39,7 @@ export default function Medicos() {
       setItems(Array.isArray(data) ? data : []);
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al cargar médicos");
+      setError(normalizeDetail(detail || err.message || "Error al cargar médicos"));
     } finally {
       setLoading(false);
     }
@@ -38,8 +49,10 @@ export default function Medicos() {
     try {
       const data = await especialidadesAPI.getAll();
       setEspecialidades(Array.isArray(data) ? data : []);
-    } catch {
+    } catch (err) {
       setEspecialidades([]);
+      const detail = err?.response?.data?.detail;
+      setError(normalizeDetail(detail || err.message || "Error al cargar especialidades"));
     }
   };
 
@@ -104,7 +117,7 @@ export default function Medicos() {
       fetchData(id);
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al guardar");
+      setError(normalizeDetail(detail || err.message || "Error al guardar"));
     }
   };
 
@@ -132,7 +145,7 @@ export default function Medicos() {
       fetchData(esp);
     } catch (err) {
       const detail = err?.response?.data?.detail;
-      setError(detail || err.message || "Error al eliminar");
+      setError(normalizeDetail(detail || err.message || "Error al eliminar"));
     }
   };
 
@@ -155,7 +168,6 @@ export default function Medicos() {
     <div className="container mt-4">
       <h2 className="fw-bold mb-3">Médicos</h2>
 
-      {/* Formulario Crear/Editar */}
       <div className="card mb-4">
         <div className="card-body">
           <h5 className="card-title">{editingId ? "Editar médico" : "Nuevo médico"}</h5>
@@ -205,7 +217,6 @@ export default function Medicos() {
         </div>
       </div>
 
-      {/* Filtro por especialidad */}
       <form className="row g-3 mb-3" onSubmit={onFilterSubmit}>
         <div className="col-sm-6">
           <label className="form-label">Filtrar por especialidad</label>
@@ -271,3 +282,4 @@ export default function Medicos() {
     </div>
   );
 }
+
