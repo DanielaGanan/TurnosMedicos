@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from api.config.database import db
 from fastapi.middleware.cors import CORSMiddleware
-from api.routers import especialidades, medicos, turnos
+from api.routers import especialidades, medicos, turnos, usuario
 from api.routers.usuario import router as usuario_router
 
 
@@ -12,6 +12,9 @@ origins = [
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    # para ver si redirige
+    "http://127.0.0.1:8000", 
+    "http://localhost:8000", 
 ]
 
 app.add_middleware(
@@ -26,21 +29,25 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await db.connect()
+    print("Conectado a la base de datos")
 
 
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
+    print("Desconectado de la base de datos")
 
 
 @app.get("/")
 async def root():
-    query = "SELECT COUNT(*) AS cantidad_turnos FROM turnos"
-    result = await db.fetch_one(query)
-    return {"mensaje": "Conexión exitosa.", "datos": result}
+    #query = "SELECT COUNT(*) AS cantidad_turnos FROM turnos"
+    #result = await db.fetch_one(query)
+    return {"mensaje": "Conexión exitosa."}
 
 
-app.include_router(usuario_router, prefix="/usuarios")
+app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
+app.include_router(turnos.router, prefix="/turnos", tags=["Turnos"])
+
 app.include_router(especialidades.router)
 app.include_router(medicos.router)
-app.include_router(turnos.router)
+#app.include_router(turnos.router)

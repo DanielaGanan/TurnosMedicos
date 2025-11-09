@@ -3,26 +3,32 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class TurnoBase(BaseModel):
+# ============================================================
+# SOLO 3 SCHEMAS NECESARIOS
+# ============================================================
+
+class TurnoCreate(BaseModel):
+    """Para CREAR un turno (input)"""
     id_usuario: int
     id_doctor: int
     fecha_hora: datetime
-    motivo: Optional[str] = None
-    activo: Optional[bool] = True
+    motivo: str
 
 
-class TurnoCreate(TurnoBase):
-    pass
-
-
-class TurnoOut(TurnoBase):
+class TurnoOut(BaseModel):
+    """Para RESPUESTAS de turnos (output)"""
     id_turno: int
+    id_usuario: int
+    id_doctor: int
+    fecha_hora: datetime
+    motivo: str
+    activo: bool
     
-    # Pydantic v2
     model_config = {"from_attributes": True}
 
 
 class TurnoDetailOut(TurnoOut):
+    """Para RESPUESTAS con datos de usuario y doctor"""
     usuario_nombre: str
     usuario_apellido: str
     medico_nombre: str

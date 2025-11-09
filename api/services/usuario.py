@@ -138,7 +138,11 @@ async def create_usuario(usuario: UsuarioCreate):
         "id_usuario": last_record_id,
         "nombre": usuario.nombre,
         "email": usuario.email
-    }# LOGIN
+    
+    }
+
+
+# LOGIN
 async def login_usuario(email: str, password: str):
     usuario = await get_usuarios_by_email(email)
 
