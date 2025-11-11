@@ -4,8 +4,10 @@ from api.services import turnos
 from api.schemas.turnos import TurnoCreate, TurnoOut, TurnoDetailOut
 
 router = APIRouter(
+    prefix="/turnos",
     tags=["Turnos"]
 )
+
 
 
 @router.get("/{id_doctor}/disponibilidad", response_model=list[str])
@@ -35,14 +37,16 @@ async def reservar_turno(turno: TurnoCreate):
     """
     return await turnos.crear_turno_sp(turno)
 
-
 @router.delete("/{id_turno}/cancelar")
 async def cancelar_turno(
     id_turno: int,
     id_usuario: int = Query(..., description="ID del usuario")
 ): 
-    """Cancela un turno"""
-
+    
+    """
+    Cancela un turno llamando al Stored Procedure CancelarTurno.
+    """
+    return await turnos.cancelar_turno_sp(id_turno=id_turno, id_usuario=id_usuario)
 
 
 @router.get("/detalle", response_model=list[TurnoDetailOut])

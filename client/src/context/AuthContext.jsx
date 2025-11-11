@@ -1,5 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export const AuthContext = createContext(null);
 
@@ -11,11 +18,12 @@ export function AuthProvider({ children }) {
     try {
       const raw = localStorage.getItem("usuario");
       if (raw) setUser(JSON.parse(raw));
+
       const rawAdmin = localStorage.getItem("is_admin");
       if (rawAdmin === "1" || rawAdmin === "true") setIsAdmin(true);
     } catch (e) {
       // Ignorar errores de parseo o storage no disponible
-      void e; // evitar no-empty y no-unused-vars
+      void e; // evita warning de variable no usada
     }
   }, []);
 
@@ -41,21 +49,35 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, login, logout, isAuthenticated: !!user, isAdmin, loginAdmin, logoutAdmin }),
+    () => ({
+      user,
+      login,
+      logout,
+      isAuthenticated: !!user,
+      isAdmin,
+      loginAdmin,
+      logoutAdmin,
+    }),
     [user, isAdmin, login, logout, loginAdmin, logoutAdmin]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (ctx === null) {
     try {
-      if (import.meta?.env?.MODE !== 'production') {
-        console.warn('useAuth: AuthProvider no encontrado. Usando valores por defecto.');
+      if (import.meta?.env?.MODE !== "production") {
+        console.warn(
+          "useAuth: AuthProvider no encontrado. Usando valores por defecto."
+        );
       }
-    } catch (e) { void e; }
+    } catch (e) {
+      void e;
+    }
     return {
       user: null,
       login: () => {},

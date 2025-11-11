@@ -54,11 +54,14 @@ export const turnosAPI = {
     return response.data;
   },
 
-  // Eliminar (soft delete)
-  delete: async (id) => {
-    const response = await api.delete(`/turnos/${id}`);
-    return response.data;
-  },
-};
+  // Cancelar turno
+delete: async (id_turno, id_usuario) => {
+  const response = await api.delete(`/turnos/${id_turno}/cancelar`, {
+    params: { id_usuario },
+  });
+  return response.data;
+},
+}
+
 
 export default turnosAPI;

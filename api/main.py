@@ -12,9 +12,6 @@ origins = [
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
-    # para ver si redirige
-    "http://127.0.0.1:8000", 
-    "http://localhost:8000", 
 ]
 
 app.add_middleware(
@@ -46,8 +43,8 @@ async def root():
 
 
 app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
-app.include_router(turnos.router, prefix="/turnos", tags=["Turnos"])
+# El router de turnos ya tiene prefix="/turnos" interno; no duplicar aquí
+app.include_router(turnos.router)
 
 app.include_router(especialidades.router)
 app.include_router(medicos.router)
-#app.include_router(turnos.router)

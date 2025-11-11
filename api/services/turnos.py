@@ -86,6 +86,7 @@ async def crear_turno_sp(payload):
         raise HTTPException(status_code=500, detail="Fallo inesperado al obtener ID del turno.")
 
 
+
 async def cancelar_turno_sp(id_turno: int, id_usuario: int):
     """
     Cancela un turno usando el SP CancelarTurno
@@ -103,12 +104,12 @@ async def cancelar_turno_sp(id_turno: int, id_usuario: int):
             @p_mensaje
         )
     """
-    
+  
     await db.execute(query=query, values={
-        "id_turno": id_turno,
-        "id_usuario": id_usuario,
+    "id_turno": id_turno,
+    "id_usuario": id_usuario,
     })
-    
+
     # Obtener resultados del SP
     result = await db.fetch_one(
         query="SELECT @p_resultado AS resultado, @p_mensaje AS mensaje"

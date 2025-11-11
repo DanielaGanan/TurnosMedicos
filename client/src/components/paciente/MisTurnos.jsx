@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { turnosAPI } from "../../services/turnos.js";
 import { medicosAPI } from "../../services/api.js";
@@ -7,22 +7,24 @@ export default function MisTurnos() {
   const { user } = useAuth();
   const idUsuario = user?.id_usuario;
 
+  // Estados
   const [turnos, setTurnos] = useState([]);
   const [medicos, setMedicos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // ESTADO DEL FORMULARIO: Separamos fecha y hora
   const [form, setForm] = useState({
     id_doctor: "",
     fecha: "",
     hora: "",
     motivo: "",
   });
-  const [horariosDisponibles, setHorariosDisponibles] = useState([]); // Horarios devueltos por la API
-  const [disponibilidadLoading, setDisponibilidadLoading] = useState(false); // Estado de carga de disponibilidad
+  const [horariosDisponibles, setHorariosDisponibles] = useState([]);
+  const [disponibilidadLoading, setDisponibilidadLoading] = useState(false);
 
+  // ==============================
+  // Función para normalizar errores
+  // ==============================
   const normalizeDetail = (detail) => {
     if (!detail) return "";
     if (typeof detail === "string") return detail;
@@ -38,6 +40,9 @@ export default function MisTurnos() {
     }
   };
 
+  // ==============================
+  // Opciones de médicos ordenadas
+  // ==============================
   const medicosOptions = useMemo(() => {
     return medicos
       .slice()
@@ -45,7 +50,10 @@ export default function MisTurnos() {
       .map((m) => ({ value: m.id_doctor, label: `${m.nombre} ${m.apellido}` }));
   }, [medicos]);
 
-  const loadData = async () => {
+  // ==============================
+  // Cargar turnos del usuario
+  // ==============================
+  const loadData = useCallback(async () => {
     if (!idUsuario) return;
     setLoading(true);
     setError("");
@@ -60,9 +68,12 @@ export default function MisTurnos() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [idUsuario]);
 
-  const loadMedicos = async () => {
+  // ==============================
+  // Cargar médicos
+  // ==============================
+  const loadMedicos = useCallback(async () => {
     try {
       const data = await medicosAPI.getAll();
       setMedicos(Array.isArray(data) ? data : []);
@@ -73,21 +84,25 @@ export default function MisTurnos() {
         normalizeDetail(detail || err.message || "Error al cargar médicos")
       );
     }
-  };
-
-  // EFECTO para cargar médicos
-  useEffect(() => {
-    loadMedicos();
   }, []);
 
-  // EFECTO para cargar los turnos del usuario
+  // ==============================
+  // useEffect para médicos
+  // ==============================
+  useEffect(() => {
+    loadMedicos();
+  }, [loadMedicos]);
+
+  // ==============================
+  // useEffect para turnos del usuario
+  // ==============================
   useEffect(() => {
     loadData();
-  }, [idUsuario]);
+  }, [idUsuario, loadData]);
 
-  // =======================================================================
-  // NUEVO EFECTO: Cargar disponibilidad cuando cambian médico o fecha
-  // =======================================================================
+  // ==============================
+  // useEffect para disponibilidad
+  // ==============================
   useEffect(() => {
     const { id_doctor, fecha } = form;
 
@@ -107,54 +122,47 @@ export default function MisTurnos() {
             detail || err.message || "Error al cargar disponibilidad"
           );
           setError(errorMsg);
-          setHorariosDisponibles([]); // Limpia si hay error (ej: fin de semana)
+          setHorariosDisponibles([]);
         })
         .finally(() => {
           setDisponibilidadLoading(false);
         });
     } else {
-      setHorariosDisponibles([]); // Limpia si falta médico o fecha
+      setHorariosDisponibles([]);
     }
   }, [form.id_doctor, form.fecha]);
 
-  // =======================================================================
-  // HANDLERS
-  // =======================================================================
+  // ==============================
+  // Handlers
+  // ==============================
 
-  // onFormChange: Se modifica para manejar los campos separados
   const onFormChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "fecha") {
-      // Si la fecha cambia, resetea la hora para forzar la recarga de disponibilidad
       setForm((f) => ({ ...f, fecha: value, hora: "" }));
     } else {
       setForm((f) => ({ ...f, [name]: value }));
     }
   };
 
-  // clearForm: Se modifica para limpiar los nuevos campos
   const clearForm = () =>
     setForm({ id_doctor: "", fecha: "", hora: "", motivo: "" });
 
-  // onCreate: Se modifica para unir fecha y hora en el payload
   const onCreate = async (e) => {
     e.preventDefault();
     setSuccess("");
     setError("");
     if (!idUsuario) return;
 
-    // Validar que los tres campos estén llenos
     if (!form.id_doctor || !form.fecha || !form.hora) {
       setError("Seleccioná médico, fecha y hora");
       return;
     }
 
-    // Construcción del payload, uniendo fecha y hora
     const payload = {
       id_usuario: idUsuario,
       id_doctor: Number(form.id_doctor),
-      // Formato esperado por FastAPI: YYYY-MM-DDT HH:MM:SS
       fecha_hora: `${form.fecha}T${form.hora}`,
       motivo: form.motivo || null,
       activo: true,
@@ -177,7 +185,7 @@ export default function MisTurnos() {
     if (!id_turno) return;
     if (!window.confirm("¿Cancelar este turno?")) return;
     try {
-      await turnosAPI.delete(id_turno);
+    await turnosAPI.delete(id_turno, idUsuario);
       setSuccess("Turno cancelado");
       loadData();
     } catch (err) {
@@ -188,9 +196,9 @@ export default function MisTurnos() {
     }
   };
 
-  // =======================================================================
-  // RENDERIZADO
-  // =======================================================================
+  // ==============================
+  // Renderizado
+  // ==============================
   return (
     <div className="container mt-4">
       <h2 className="fw-bold mb-3">Mis Turnos</h2>
@@ -198,11 +206,12 @@ export default function MisTurnos() {
       {success && <div className="alert alert-success py-2">{success}</div>}
       {error && <div className="alert alert-danger py-2">{error}</div>}
 
+      {/* FORMULARIO DE NUEVO TURNO */}
       <div className="card mb-4">
         <div className="card-body">
           <h5 className="card-title">Reservar nuevo turno</h5>
           <form className="row g-3" onSubmit={onCreate}>
-            {/* 1. Selección de Médico */}
+            {/* Médico */}
             <div className="col-md-4">
               <label className="form-label">Médico</label>
               <select
@@ -221,7 +230,7 @@ export default function MisTurnos() {
               </select>
             </div>
 
-            {/* 2. Selección de Fecha */}
+            {/* Fecha */}
             <div className="col-md-2">
               <label className="form-label">Fecha</label>
               <input
@@ -231,11 +240,11 @@ export default function MisTurnos() {
                 value={form.fecha}
                 onChange={onFormChange}
                 required
-                min={new Date().toISOString().split("T")[0]} // Opcional: solo fechas futuras
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
-            {/* 3. Selección de Hora (Horarios Limitados) */}
+            {/* Hora */}
             <div className="col-md-2">
               <label className="form-label">Hora</label>
               <select
@@ -243,7 +252,6 @@ export default function MisTurnos() {
                 name="hora"
                 value={form.hora}
                 onChange={onFormChange}
-                // Deshabilitado si falta médico/fecha o está cargando
                 disabled={
                   !form.id_doctor || !form.fecha || disponibilidadLoading
                 }
@@ -259,7 +267,6 @@ export default function MisTurnos() {
                     : "Seleccioná hora"}
                 </option>
                 {horariosDisponibles.map((h) => (
-                  // Muestra solo HH:MM
                   <option key={h} value={h}>
                     {h.substring(0, 5)}
                   </option>
@@ -267,7 +274,7 @@ export default function MisTurnos() {
               </select>
             </div>
 
-            {/* 4. Motivo */}
+            {/* Motivo */}
             <div className="col-md-4">
               <label className="form-label">Motivo (opcional)</label>
               <input
@@ -280,7 +287,7 @@ export default function MisTurnos() {
               />
             </div>
 
-            {/* Botón de Reserva */}
+            {/* Botón */}
             <div className="col-12">
               <button className="btn btn-primary" type="submit">
                 Reservar
@@ -290,9 +297,8 @@ export default function MisTurnos() {
         </div>
       </div>
 
+      {/* Tabla de turnos */}
       {loading && <p className="text-muted">Cargando turnos...</p>}
-
-      {/* ... Resto del componente de tabla sin cambios ... */}
       <div className="table-responsive">
         <table className="table table-dark table-striped align-middle">
           <thead>
@@ -317,9 +323,7 @@ export default function MisTurnos() {
                 <tr key={t.id_turno}>
                   <td>{t.id_turno}</td>
                   <td>
-                    {`${t.medico_nombre ?? ""} ${
-                      t.medico_apellido ?? ""
-                    }`.trim()}
+                    {`${t.medico_nombre ?? ""} ${t.medico_apellido ?? ""}`.trim()}
                   </td>
                   <td>
                     {t.fecha_hora
