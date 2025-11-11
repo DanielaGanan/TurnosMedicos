@@ -61,3 +61,9 @@ class UsuarioPublic(BaseModel):
     direccion: str
     fecha_registro: datetime
     activo: bool
+
+
+# Login
+class LoginRequest(BaseModel):
+    email: str
+    password: str

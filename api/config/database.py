@@ -1,14 +1,14 @@
 import os
 from databases import Database
 
-# Cargar variables desde .env si existe (python-dotenv)
+# Cargar variables desde .env (python-dotenv)
 try:
-    from dotenv import load_dotenv  # type: ignore
+    from dotenv import load_dotenv 
     load_dotenv()
 except Exception:
     pass
 
-# No exponer credenciales en el código. Usar DATABASE_URL del entorno o .env
+# No exponemos credenciales en el codigo
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError(
