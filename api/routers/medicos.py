@@ -7,7 +7,7 @@ router = APIRouter(prefix="/medicos", tags=["Médicos"])
 
 
 # -------------------------
-# LISTAR MÉDICOS
+# LISTAR MEDICOS
 # -------------------------
 @router.get("/", response_model=List[MedicoOut])
 async def listar(id_especialidad: int | None = None):
@@ -15,7 +15,7 @@ async def listar(id_especialidad: int | None = None):
 
 
 # -------------------------
-# LISTAR MÉDICOS DETALLE
+# LISTAR MEDICOS DETALLE
 # -------------------------
 @router.get("/detalle", response_model=List[MedicoDetailOut])
 async def listar_detalle(id_especialidad: int | None = None):

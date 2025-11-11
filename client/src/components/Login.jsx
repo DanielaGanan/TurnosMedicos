@@ -23,7 +23,7 @@ export default function Login() {
       navigate('/mis-turnos');
     } catch (error) {
       const detail = error?.response?.data?.detail;
-      setMensaje(detail || 'Error al iniciar sesión');
+      setMensaje(detail || 'Error al iniciar sesion');
     }
   };
 

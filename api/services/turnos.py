@@ -53,16 +53,16 @@ async def crear_turno_sp(payload):
     id_turno_creado = None
 
     if result and result["resultado"] is not None:
-        # La consulta de resultados funcionó correctamente
+        # La consulta de resultados funciono correctamente
         resultado = result["resultado"]
         mensaje = result["mensaje"]
 
-        # 3. Lógica de validación de tu SP (código negativo = ERROR)
+        # Validación de SP 
         if resultado < 0:
-            # Error de validación del SP (ej. turno ya reservado)
+            # Error de validacion
             raise HTTPException(status_code=400, detail=mensaje)
         
-        # Éxito: el resultado es el ID del turno creado
+        # exito: el resultado es el ID del turno creado
         id_turno_creado = resultado
         
     else:
@@ -75,7 +75,7 @@ async def crear_turno_sp(payload):
             # Fallo crítico: no se pudo obtener el ID
             raise HTTPException(
                 status_code=500, 
-                detail="Error crítico: Turno reservado, pero no se pudo obtener el ID para la respuesta."
+                detail="Error critico: Turno reservado, pero no se pudo obtener el ID para la respuesta."
             )
 
     # Devolver el TurnoOut completo
@@ -117,7 +117,7 @@ async def cancelar_turno_sp(id_turno: int, id_usuario: int):
     resultado = result["resultado"]
     mensaje = result["mensaje"]
     
-    # Mapear errores a códigos HTTP apropiados
+    # Mapear errores a codigos HTTP apropiados
     if resultado == -2:
         raise HTTPException(status_code=404, detail=mensaje)  # No existe
     elif resultado == -3:
@@ -131,7 +131,7 @@ async def cancelar_turno_sp(id_turno: int, id_usuario: int):
 
 # Funciones del sp
 async def listar_turnos(id_usuario: int = None, id_doctor: int = None):
-    """Lista turnos activos con filtros opcionales"""
+    """Lista turnos activos con filtros opcionales y ordenados por hora"""
     query = """
         SELECT 
             id_turno, 

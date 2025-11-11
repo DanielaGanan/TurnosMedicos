@@ -3,22 +3,22 @@ from typing import List
 from fastapi import HTTPException
 from api.config.database import db
 from api.schemas.usuario import Usuario, UsuarioId, UsuarioCreate, UsuarioPublic
-# Para trabajar con contraseÃ±as encriptadas
+# Para trabajar con contrasenas encriptadas
 import hashlib
 from passlib.context import CryptContext
 
-# Para encriptar contraseÃ±as con bcrypt
+# Para encriptar contraseñas con bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Para hashear contra
 def hash_password(password: str) -> str:
-    """Encripta la contraseÃ±a"""
+    """Encripta la contrasena"""
     return pwd_context.hash(password)
 
 def verificar_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# Para obtener todos los usuarios (sin contraseÃ±as)
+# Para obtener todos los usuarios - sin cotnraseñas
 async def get_all_usuarios() -> List[UsuarioPublic]:
     query = (
         "SELECT id_usuario, nombre, apellido, email, telefono, dni, "
@@ -226,7 +226,9 @@ async def update_usuario(usuario_id: int, usuario: Usuario) -> UsuarioId:
         "id_usuario": usuario_id,
         "password": hashed_password,
         "fecha_registro": existeId['fecha_registro']
-    }# Desactivar usuario (eliminar)
+    }
+
+# Desactivar usuario (eliminar)
 async def delete_usuario(id: int):
     usuario = await get_usuarios_by_id(id)
     if not usuario:

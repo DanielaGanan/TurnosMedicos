@@ -4,9 +4,7 @@ from api.models import medicos, especialidades
 from sqlalchemy import select
 
 
-# -------------------------
-# LISTAR MÃ‰DICOS
-# -------------------------
+# LISTAR MEDICOS
 async def listar_medicos(id_especialidad: int | None = None):
     query = medicos.select().where(medicos.c.activo == True)
     if id_especialidad:
@@ -14,9 +12,8 @@ async def listar_medicos(id_especialidad: int | None = None):
     return await db.fetch_all(query)
 
 
-# -------------------------
-# LISTAR MÃ‰DICOS CON ESPECIALIDAD (DETALLE)
-# -------------------------
+
+# LISTAR MEDICOS CON ESPECIALIDAD (DETALLE)
 async def listar_medicos_detalle(id_especialidad: int | None = None):
     stmt = (
         select(
@@ -38,9 +35,8 @@ async def listar_medicos_detalle(id_especialidad: int | None = None):
     return await db.fetch_all(stmt)
 
 
-# -------------------------
-# OBTENER MÃ‰DICO POR ID
-# -------------------------
+
+# OBTENER MEDICO POR ID
 async def obtener_medico(id_doctor: int):
     row = await db.fetch_one(medicos.select().where(medicos.c.id_doctor == id_doctor))
     if not row:
@@ -48,9 +44,8 @@ async def obtener_medico(id_doctor: int):
     return row
 
 
-# -------------------------
-# CREAR MÃ‰DICO
-# -------------------------
+
+# CREAR MEDICOS
 async def crear_medico(payload):
     # Validar existencia de la especialidad
     q_esp = especialidades.select().where(especialidades.c.id_especialidad == payload.id_especialidad)
@@ -107,9 +102,11 @@ async def crear_medico(payload):
         activo=payload.activo
     )
     new_id = await db.execute(q_insert)
-    return await db.fetch_one(medicos.select().where(medicos.c.id_doctor == new_id))# -------------------------
-# ACTUALIZAR MÃ‰DICO
-# -------------------------
+    return await db.fetch_one(medicos.select().where(medicos.c.id_doctor == new_id))
+
+
+
+# ACTUALIZAR MEDICO
 async def actualizar_medico(id_doctor: int, payload):
     medico_existente = await db.fetch_one(medicos.select().where(medicos.c.id_doctor == id_doctor))
     if not medico_existente:
@@ -155,9 +152,9 @@ async def actualizar_medico(id_doctor: int, payload):
     )
     await db.execute(q_update)
     return await db.fetch_one(medicos.select().where(medicos.c.id_doctor == id_doctor))
-# -------------------------
+
+
 # ELIMINAR (SOFT DELETE)
-# -------------------------
 async def eliminar_medico(id_doctor: int):
     q_update = medicos.update().where(medicos.c.id_doctor == id_doctor).values(activo=False)
     result = await db.execute(q_update)

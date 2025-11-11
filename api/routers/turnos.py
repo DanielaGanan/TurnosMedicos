@@ -4,14 +4,9 @@ from api.services import turnos
 from api.schemas.turnos import TurnoCreate, TurnoOut, TurnoDetailOut
 
 router = APIRouter(
-   # prefix="/turnos",
     tags=["Turnos"]
 )
 
-
-# ============================================================
-# ENDPOINTS PRINCIPALES (CON STORED PROCEDURES)
-# ============================================================
 
 @router.get("/{id_doctor}/disponibilidad", response_model=list[str])
 async def obtener_disponibilidad(
@@ -19,7 +14,7 @@ async def obtener_disponibilidad(
     fecha: date = Query(..., description="Fecha a consultar (YYYY-MM-DD)")
 ):
     """
-    Obtiene los horarios disponibles para un doctor en una fecha específica.
+    Obtiene los horarios disponibles para un doctor en una fecha especifica
     """
     return await turnos.obtener_disponibilidad(id_doctor=id_doctor, fecha=fecha)
 
@@ -57,10 +52,6 @@ async def listar_turnos_detalle(
 ):
     """
     Lista los turnos con detalle de usuario y médico.
-
-    Ejemplos:
     - GET /turnos/detalle
-    - GET /turnos/detalle?id_usuario=1
-    - GET /turnos/detalle?id_doctor=2
     """
     return await turnos.listar_turnos_detalle(id_usuario=id_usuario, id_doctor=id_doctor)
